@@ -5,7 +5,7 @@ use piston_window::types::Color;
 use crate::draw::draw_block;
 
 const SNAKE_COLOR:Color = [0.00,0.80,0.00,1.0];
-
+#[derive(Clone, Copy,PartialEq)]
 pub enum Direction {
     Up,
     Down,
@@ -24,6 +24,7 @@ impl  Direction {
     }
 }
 
+#[derive(Clone, Debug)]
 struct  Block{
     x:i32,
     y:i32
@@ -76,6 +77,32 @@ impl Snake {
         self.body.push_front(new_block);
         let remove_block = self.body.pop_back().unwrap();
         self.tail = Some(remove_block);
+    }
+
+
+    pub fn head_direction(&self)-> Direction {
+        self.direction
+    }
+
+    pub fn next_head(&self, dir:Option<Direction>) -> (i32,i32) {
+        let (head_x, head_y): (i32,i32) = self.head_position();
+
+        let mut moving_dir = self.direction;
+        match dir {
+            Some(d) => moving_dir = d,
+            None => {}
+        }
+
+        match moving_dir {
+            Direction::Up => (head_x, head_y - 1),
+            Direction::Down => (head_x, head_y + 1),
+            Direction::Left => (head_x - 1, head_y),
+            Direction::Right => (head_x + 1, head_y)
+        }
+    }
+    pub fn restore_tail(&mut self){
+        let blk = self.tail.clone().unwrap();
+        self.body.push_back(blk);
     }
 
 }
